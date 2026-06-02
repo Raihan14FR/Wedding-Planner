@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Planner Raihan & Lisa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
+    </script>
+    <style>
+        :root {
+            --gold: #C9A03A;
+            --gold-light: #FDF8EF;
+            --gold-muted: #B8922F;
+            --pink: #E8B4B8;
+            --pink-light: #FDF5F6;
+            --sage: #8FA88A;
+            --sage-light: #F3F7F2;
+            --sage-dark: #6B8A65;
+            --danger: #E07070;
+            --danger-light: #FDF3F3;
+            --danger-dark: #C45050;
+            --bg: #FAFAF8;
+            --bg-card: #FFFFFF;
+            --bg-hover: #F5F5F2;
+            --border: #E8E6E1;
+            --border-light: #F0EEEA;
+            --text: #1A1A1A;
+            --text-secondary: #5C5C5C;
+            --text-tertiary: #999993;
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.12);
+            --radius-xs: 6px;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --transition-fast: 0.15s ease;
+            --transition: 0.2s ease;
+            --transition-slow: 0.3s ease;
+            --status-waiting: #A3A39E;
+            --status-waiting-bg: #F5F5F2;
+            --status-progress: #5B9BD5;
+            --status-progress-bg: #EDF4FB;
+            --status-done: #7DB87D;
+            --status-done-bg: #F0F7F0;
+            --status-overdue: #E07070;
+            --status-overdue-bg: #FDF3F3;
+            --status-dueSoon: #D4A040;
+            --status-dueSoon-bg: #FDF8EF;
+            --header-bg: rgba(255, 255, 255, 0.88);
+        }
+
+        .dark {
+            --bg: #17171C;
+            --bg-card: #1F1F26;
+            --bg-hover: #282833;
+            --border: #2E2E3A;
+            --border-light: #262632;
+            --text: #E8E6E1;
+            --text-secondary: #A09E98;
+            --text-tertiary: #6B6A65;
+            --gold: #D4AA40;
+            --gold-light: #2A2518;
+            --gold-muted: #B8922F;
+            --pink: #D4A0A6;
+            --pink-light: #2A2022;
+            --sage: #8FA88A;
+            --sage-light: #1E241E;
+            --sage-dark: #7DA07A;
+            --danger: #E07070;
+            --danger-light: #2A1E1E;
+            --danger-dark: #C45050;
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.15);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.5);
+            --status-waiting: #7A7975;
+            --status-waiting-bg: #2A2A28;
+            --status-progress: #5B9BD5;
+            --status-progress-bg: #1A2230;
+            --status-done: #7DB87D;
+            --status-done-bg: #1A241E;
+            --status-overdue: #E07070;
+            --status-overdue-bg: #2A1E1E;
+            --status-dueSoon: #D4A040;
+            --status-dueSoon-bg: #2A2518;
+            --header-bg: rgba(23, 23, 28, 0.88);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background var(--transition-slow), color var(--transition-slow);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: -0.01em;
+        }
+        svg.icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        svg.icon-sm {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        svg.icon-xs {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        svg.icon-lg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--header-bg);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            transition: all var(--transition-slow);
+        }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .header-brand svg {
+            width: 30px;
+            height: 30px;
+        }
+        .header-brand .ring-outer {
+            fill: none;
+            stroke: var(--gold);
+            stroke-width: 2.4;
+        }
+        .header-brand .ring-inner {
+            fill: none;
+            stroke: var(--pink);
+            stroke-width: 2;
+        }
+        .header-brand .gem {
+            fill: var(--gold);
+        }
+        .header-title {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            white-space: nowrap;
+        }
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            justify-content: center;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+        .header-date {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: color var(--transition-fast);
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+        }
+        .header-date:hover {
+            color: var(--gold);
+            background: var(--gold-light);
+        }
+        .header-countdown {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--pink);
+            background: var(--pink-light);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: var(--radius-full);
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid transparent;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+            outline: none;
+            background: transparent;
+            color: var(--text-secondary);
+            position: relative;
+        }
+        .btn:hover {
+            background: var(--bg-hover);
+            color: var(--text);
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-primary {
+            background: var(--gold);
+            color: #fff;
+            border-color: var(--gold);
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: var(--gold-muted);
+            border-color: var(--gold-muted);
+            color: #fff;
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+            font-weight: 600;
+        }
+        .btn-danger:hover {
+            background: var(--danger-dark);
+            border-color: var(--danger-dark);
+            color: #fff;
+        }
+        .btn-ghost {
+            background: transparent;
+            border-color: transparent;
+            padding: 6px 10px;
+            color: var(--text-tertiary);
+        }
+        .btn-ghost:hover {
+            color: var(--text);
+            background: var(--bg-hover);
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.72rem;
+            gap: 4px;
+            border-radius: var(--radius-full);
+        }
+        .btn-xs {
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            gap: 3px;
+            border-radius: var(--radius-full);
+        }
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn:disabled {
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 2px;
+            padding: 6px;
+            background: var(--bg-hover);
+            border-radius: var(--radius-full);
+            flex-shrink: 0;
+            align-self: center;
+        }
+        .tab-btn {
+            padding: 7px 16px;
+            border-radius: var(--radius-full);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tab-btn:hover {
+            color: var(--text);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-xs);
+        }
+        .tab-btn.active {
+            background: var(--bg-card);
+            color: var(--text);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .main-wrap {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 16px 18px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .dashboard-hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 22px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        .hero-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+        .hero-card.primary-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--gold-light) 100%);
+            border-color: var(--gold);
+            border-width: 1.5px;
+        }
+        .dark .hero-card.primary-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, #2A2518 100%);
+        }
+        .hero-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-tertiary);
+            margin-bottom: 2px;
+        }
+        .hero-value {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            line-height: 1.1;
+        }
+        .hero-value.gold {
+            color: var(--gold);
+            font-size: 2.2rem;
+        }
+        .hero-sub {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-top: 3px;
+        }
+        .hero-progress {
+            margin-top: 10px;
+            height: 5px;
+            background: var(--border);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+        .hero-progress-fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            transition: width var(--transition-slow);
+        }
+        .hero-progress-fill.gold {
+            background: var(--gold);
+        }
+        .hero-progress-fill.sage {
+            background: var(--sage);
+        }
+        .hero-progress-fill.pink {
+            background: var(--pink);
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-hero {
+                grid-template-columns: 1fr;
+            }
+            .hero-value {
+                font-size: 1.5rem;
+            }
+            .hero-value.gold {
+                font-size: 1.7rem;
+            }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 2px;
+        }
+        .section-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            box-shadow: var(--shadow-xs);
+            transition: all var(--transition);
+        }
+        .stat-card:hover {
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-label {
+            font-size: 0.66rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-tertiary);
+        }
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-top: 1px;
+        }
+        .stat-value.gold {
+            color: var(--gold);
+        }
+        @media (max-width: 500px) {
+            .summary-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 12px;
+            }
+            .stat-value {
+                font-size: 1rem;
+            }
+        }
+
+        .progress-bar-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            box-shadow: var(--shadow-xs);
+        }
+        .progress-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .progress-bar-outer {
+            height: 7px;
+            background: var(--border-light);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: var(--sage);
+            transition: width var(--transition-slow);
+        }
+        .progress-bar-inner.complete {
+            background: var(--gold);
+        }
+
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .category-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xs);
+            transition: all var(--transition);
+            overflow: hidden;
+        }
+        .category-card:hover {
+            box-shadow: var(--shadow-sm);
+        }
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            cursor: pointer;
+            user-select: none;
+            gap: 10px;
+            flex-wrap: wrap;
+            transition: background var(--transition-fast);
+        }
+        .category-header:hover {
+            background: var(--bg-hover);
+        }
+        .category-header-left {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            flex: 1;
+            min-width: 0;
+        }
+        .category-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .category-name {
+            font-weight: 650;
+            font-size: 0.88rem;
+            letter-spacing: -0.01em;
+            color: var(--text);
+            word-break: break-word;
+            line-height: 1.3;
+        }
+        .category-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+        }
+        .category-subtotal {
+            font-weight: 600;
+            color: var(--gold);
+            font-size: 0.78rem;
+        }
+        .category-chevron {
+            flex-shrink: 0;
+            transition: transform var(--transition);
+            color: var(--text-tertiary);
+        }
+        .category-card.expanded .category-chevron {
+            transform: rotate(180deg);
+        }
+        .category-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-slow);
+            border-top: 1px solid transparent;
+        }
+        .category-card.expanded .category-body {
+            max-height: 5000px;
+            border-top-color: var(--border);
+            overflow: visible;
+        }
+        .category-body-inner {
+            padding: 0 18px 14px;
+        }
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin: 3px 0;
+            border-radius: var(--radius-sm);
+            transition: background var(--transition-fast);
+            flex-wrap: wrap;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+        .item-row:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-light);
+        }
+        .item-info {
+            flex: 1;
+            min-width: 120px;
+        }
+        .item-name {
+            font-weight: 550;
+            font-size: 0.82rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+            word-break: break-word;
+        }
+        .item-notes {
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            margin-top: 1px;
+            word-break: break-word;
+        }
+        .item-notes a {
+            color: var(--sage-dark);
+            text-decoration: underline;
+            font-weight: 500;
+        }
+        .item-qty {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-hover);
+            padding: 4px 9px;
+            border-radius: var(--radius-full);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .item-price {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--gold);
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 70px;
+            text-align: right;
+        }
+        .item-actions {
+            display: flex;
+            gap: 1px;
+            flex-shrink: 0;
+            opacity: 0.35;
+            transition: opacity var(--transition-fast);
+        }
+        .item-row:hover .item-actions {
+            opacity: 1;
+        }
+        @media (max-width: 600px) {
+            .item-actions {
+                opacity: 1;
+            }
+            .item-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 5px;
+                padding: 10px;
+            }
+            .item-price {
+                text-align: left;
+            }
+            .item-actions {
+                align-self: flex-end;
+            }
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            cursor: pointer;
+            border: 1.5px solid transparent;
+            flex-shrink: 0;
+            transition: all var(--transition-fast);
+            position: relative;
+            z-index: 5;
+        }
+        .status-badge:hover {
+            transform: scale(1.04);
+        }
+        .status-badge.waiting {
+            background: var(--status-waiting-bg);
+            color: var(--status-waiting);
+            border-color: var(--status-waiting);
+        }
+        .status-badge.progress {
+            background: var(--status-progress-bg);
+            color: var(--status-progress);
+            border-color: var(--status-progress);
+        }
+        .status-badge.done {
+            background: var(--status-done-bg);
+            color: var(--status-done);
+            border-color: var(--status-done);
+        }
+        .status-badge.onnego {
+            background: var(--status-dueSoon-bg);
+            color: var(--status-dueSoon);
+            border-color: var(--status-dueSoon);
+        }
+        .status-dot-sm {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-popup {
+            position: fixed;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 300;
+            padding: 3px;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            min-width: 140px;
+            animation: popIn 0.18s ease;
+        }
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .status-option {
+            padding: 7px 12px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            font-size: 0.74rem;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            text-align: left;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: background var(--transition-fast);
+            white-space: nowrap;
+        }
+        .status-option:hover {
+            background: var(--bg-hover);
+        }
+
+        .checklist-table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-xs);
+        }
+        .checklist-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 660px;
+        }
+        .checklist-table th {
+            background: var(--bg-hover);
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.66rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-tertiary);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .checklist-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            color: var(--text);
+        }
+        .checklist-table tr:hover td {
+            background: var(--bg-hover);
+        }
+        .deadline-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.66rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .deadline-overdue {
+            background: var(--status-overdue-bg);
+            color: var(--status-overdue);
+        }
+        .deadline-dueSoon {
+            background: var(--status-dueSoon-bg);
+            color: var(--status-dueSoon);
+        }
+        .deadline-ontrack {
+            background: var(--status-done-bg);
+            color: var(--status-done);
+        }
+
+        .checklist-card {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 13px 15px;
+            margin-bottom: 7px;
+            box-shadow: var(--shadow-xs);
+        }
+        @media (max-width: 768px) {
+            .checklist-table-wrap {
+                display: none;
+            }
+            .checklist-card {
+                display: block;
+            }
+        }
+        .checklist-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 3px;
+            font-size: 0.76rem;
+        }
+        .cl-card-label {
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-input {
+            font-family: inherit;
+            font-size: 0.78rem;
+            padding: 7px 12px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            outline: none;
+            flex: 1;
+            min-width: 120px;
+            transition: all var(--transition-fast);
+        }
+        .filter-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold-light);
+        }
+        .filter-select {
+            font-family: inherit;
+            font-size: 0.74rem;
+            padding: 7px 10px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            outline: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+        .filter-select:focus {
+            border-color: var(--gold);
+        }
+
+        .mahar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 13px 16px;
+            margin-bottom: 7px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            box-shadow: var(--shadow-xs);
+            transition: all var(--transition);
+        }
+        .mahar-card:hover {
+            box-shadow: var(--shadow-sm);
+        }
+        .mahar-check-circle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            color: transparent;
+        }
+        .mahar-check-circle.done {
+            background: var(--sage);
+            border-color: var(--sage);
+            color: #fff;
+        }
+        .mahar-info {
+            flex: 1;
+            min-width: 100px;
+        }
+        .mahar-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+        .mahar-desc {
+            font-size: 0.72rem;
+            color: var(--text-tertiary);
+        }
+        .mahar-price {
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        @media (max-width: 400px) {
+            .mahar-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .mahar-price {
+                align-self: flex-end;
+            }
+        }
+
+        .add-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 9px 14px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            background: transparent;
+            border: 1.5px dashed var(--border);
+            transition: all var(--transition-fast);
+            font-family: inherit;
+            width: 100%;
+            justify-content: center;
+            letter-spacing: -0.01em;
+            margin-top: 6px;
+        }
+        .add-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-light);
+        }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            width: 100%;
+            max-width: 460px;
+            max-height: 88vh;
+            overflow-y: auto;
+            animation: slideUp 0.25s ease;
+            border: 1px solid var(--border);
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .modal-header {
+            padding: 18px 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 1;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+        .modal-title {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+        .modal-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-hover);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            transition: all var(--transition-fast);
+            flex-shrink: 0;
+        }
+        .modal-close:hover {
+            background: #fce4e4;
+            color: #d44;
+        }
+        .dark .modal-close:hover {
+            background: #3D2020;
+            color: #f66;
+        }
+        .modal-body {
+            padding: 16px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .modal-body p {
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .form-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .form-input,
+        .form-select,
+        .form-textarea {
+            font-family: inherit;
+            font-size: 0.84rem;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            transition: all var(--transition-fast);
+            outline: none;
+            width: 100%;
+            letter-spacing: -0.01em;
+        }
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold-light);
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 65px;
+        }
+        .form-hint {
+            font-size: 0.66rem;
+            color: var(--text-tertiary);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 400px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .modal {
+                max-width: 96%;
+                max-height: 92vh;
+            }
+        }
+        .modal-footer {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            padding-top: 2px;
+        }
+
+        /* Confirmation modal danger icon */
+        .confirm-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--danger-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--danger);
+            margin: 0 auto 8px;
+        }
+
+        /* ── TOAST ── */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 11px 16px;
+            box-shadow: var(--shadow-md);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text);
+            animation: toastIn 0.3s ease;
+            pointer-events: auto;
+            max-width: 380px;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .toast.fading {
+            animation: toastOut 0.3s ease forwards;
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+        .toast-undo {
+            background: var(--gold);
+            color: #fff;
+            border: none;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.7rem;
+            font-family: inherit;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+        }
+        .toast-undo:hover {
+            background: var(--gold-muted);
+        }
+        .toast-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            padding: 2px;
+            margin-left: auto;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+        .toast-close:hover {
+            color: var(--text);
+        }
+
+        /* ── LOADING ── */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: all;
+        }
+        .loading-box {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 20px 28px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--text);
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2.5px solid var(--border);
+            border-top-color: var(--gold);
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 14px;
+                gap: 8px;
+            }
+            .header-title {
+                font-size: 0.88rem;
+            }
+            .header-meta {
+                gap: 8px;
+                justify-content: flex-start;
+            }
+            .main-wrap {
+                padding: 10px 8px 50px;
+                gap: 12px;
+            }
+            .category-header {
+                padding: 10px 12px;
+            }
+            .category-body-inner {
+                padding: 0 10px 10px;
+            }
+            .tab-btn {
+                padding: 6px 10px;
+                font-size: 0.72rem;
+                gap: 4px;
+            }
+            .btn {
+                font-size: 0.72rem;
+                padding: 6px 10px;
+            }
+        }
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                padding: 8px 10px;
+            }
+            .header-meta {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .tab-nav {
+                gap: 1px;
+                padding: 4px;
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .tab-btn {
+                padding: 5px 8px;
+                font-size: 0.68rem;
+                gap: 3px;
+            }
+            .filter-row {
+                flex-direction: column;
+            }
+            .filter-input {
+                width: 100%;
+            }
+            .toast {
+                max-width: 280px;
+                font-size: 0.72rem;
+            }
+        }
+
+        @media print {
+            .header,
+            .btn,
+            .add-btn,
+            .item-actions,
+            .status-popup,
+            .modal-overlay,
+            .toast-container,
+            .loading-overlay,
+            .tab-nav,
+            .filter-row,
+            .category-chevron {
+                display: none !important;
+            }
+            .category-body {
+                max-height: none !important;
+                border-top: 1px solid #ddd !important;
+                overflow: visible !important;
+            }
+            .category-card,
+            .item-row,
+            .mahar-card,
+            .checklist-card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .checklist-table-wrap {
+                display: block !important;
+            }
+            .checklist-card {
+                display: none !important;
+            }
+            body {
+                background: #fff;
+                color: #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ═══════════ HEADER ═══════════ -->
+    <header class="header">
+        <div class="header-brand">
+            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="16" cy="18" rx="10" ry="8" class="ring-outer" transform="rotate(-15 16 18)"/>
+                <ellipse cx="24" cy="18" rx="10" ry="8" class="ring-inner" transform="rotate(15 24 18)"/>
+                <polygon points="20,8 22,14 20,16 18,14" class="gem"/>
+            </svg>
+            <span class="header-title">Wedding Planner Raihan & Lisa</span>
+        </div>
+        <div class="header-meta">
+            <span class="header-date" id="headerDate" onclick="openWeddingDateModal()">
+                <svg class="icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span id="weddingDateDisplay">Set wedding date</span>
+            </span>
+            <span class="header-countdown" id="headerCountdown" style="display:none;"></span>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-sm" onclick="exportToExcel()" id="btnExportExcel" title="Export Excel">
+                <svg class="icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg> Excel
+            </button>
+            <button class="btn btn-sm" onclick="exportToPDF()" id="btnExportPDF" title="Export PDF">
+                <svg class="icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> PDF
+            </button>
+            <button class="btn btn-icon btn-ghost" onclick="toggleTheme()" title="Toggle theme" id="themeToggle">
+                <svg id="sunIcon" class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg id="moonIcon" class="icon" viewBox="0 0 24 24" style="display:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- ═══════════ MAIN ═══════════ -->
+    <main class="main-wrap" id="mainContent">
+        <div class="tab-nav" id="tabNav">
+            <button class="tab-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                <svg class="icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Dashboard
+            </button>
+            <button class="tab-btn" data-tab="budget" onclick="switchTab('budget')">
+                <svg class="icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Budget
+            </button>
+            <button class="tab-btn" data-tab="checklist" onclick="switchTab('checklist')">
+                <svg class="icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 12 11 14 15 10"/></svg> Checklist
+            </button>
+            <button class="tab-btn" data-tab="mahar" onclick="switchTab('mahar')">
+                <svg class="icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg> Mahar
+            </button>
+        </div>
+        <div id="tab-dashboard" class="tab-content"><div class="dashboard-hero" id="dashboardGrid"></div></div>
+        <div id="tab-budget" class="tab-content" style="display:none;">
+            <div class="summary-row" id="summaryPanel"></div>
+            <div class="progress-bar-wrap" id="progressSection"></div>
+            <div class="section-header"><span class="section-title">Kategori</span></div>
+            <div class="category-list" id="categoriesContainer"></div>
+            <button class="add-btn" onclick="openCategoryModal()"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah Kategori</button>
+        </div>
+        <div id="tab-checklist" class="tab-content" style="display:none;">
+            <div class="summary-row" id="checklistSummary"></div>
+            <div class="filter-row" id="checklistFilter"></div>
+            <div class="checklist-table-wrap" id="checklistTableWrap"></div>
+            <div id="checklistCards"></div>
+            <button class="add-btn" onclick="openChecklistModal()"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah Task</button>
+        </div>
+        <div id="tab-mahar" class="tab-content" style="display:none;">
+            <div class="summary-row" id="maharSummary"></div>
+            <div class="section-header"><span class="section-title">Daftar Mahar</span></div>
+            <div id="maharList"></div>
+            <button class="add-btn" onclick="openMaharModal()"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah Item Mahar</button>
+        </div>
+    </main>
+
+    <!-- ═══════════ MODALS ═══════════ -->
+    <!-- Item Modal -->
+    <div class="modal-overlay" id="itemModalOverlay" style="display:none;">
+        <div class="modal"><div class="modal-header"><span class="modal-title" id="itemModalTitle">Tambah Item</span><button class="modal-close" onclick="closeItemModal()"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">Nama Item</label><input type="text" class="form-input" id="itemNameInput"></div>
+                <div class="form-row"><div class="form-group"><label class="form-label">Kuantitas</label><input type="number" class="form-input" id="itemQtyInput" min="1" value="1"></div><div class="form-group"><label class="form-label">Harga (Rp)</label><input type="number" class="form-input" id="itemPriceInput" min="0" value="0"></div></div>
+                <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="itemStatusInput"><option value="Waiting">Waiting</option><option value="OnNego">On Nego</option><option value="OnProgress">On Progress</option><option value="Done">Done</option></select></div>
+                <div class="form-group"><label class="form-label">Catatan</label><textarea class="form-textarea" id="itemNotesInput"></textarea><span class="form-hint">Ctrl+Enter untuk menyimpan. URL otomatis jadi link.</span></div>
+                <div class="modal-footer"><button class="btn btn-sm" onclick="closeItemModal()">Batal</button><button class="btn btn-primary btn-sm" onclick="saveItem()">Simpan</button></div>
+            </div></div>
+    </div>
+    <!-- Category Modal -->
+    <div class="modal-overlay" id="categoryModalOverlay" style="display:none;">
+        <div class="modal"><div class="modal-header"><span class="modal-title" id="categoryModalTitle">Tambah Kategori</span><button class="modal-close" onclick="closeCategoryModal()"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+            <div class="modal-body"><div class="form-group"><label class="form-label">Nama Kategori</label><input type="text" class="form-input" id="categoryNameInput"></div>
+            <div class="modal-footer"><button class="btn btn-sm" onclick="closeCategoryModal()">Batal</button><button class="btn btn-primary btn-sm" onclick="saveCategory()">Simpan</button></div></div></div>
+    </div>
+    <!-- Checklist Modal -->
+    <div class="modal-overlay" id="checklistModalOverlay" style="display:none;">
+        <div class="modal"><div class="modal-header"><span class="modal-title" id="checklistModalTitle">Tambah Task</span><button class="modal-close" onclick="closeChecklistModal()"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">Task</label><input type="text" class="form-input" id="checklistTaskInput"></div>
+                <div class="form-row"><div class="form-group"><label class="form-label">Kategori</label><input type="text" class="form-input" id="checklistCatInput" placeholder="Administrasi, Dekorasi..."></div><div class="form-group"><label class="form-label">Deadline</label><input type="date" class="form-input" id="checklistDeadlineInput"></div></div>
+                <div class="form-group"><label class="form-label">PIC</label><input type="text" class="form-input" id="checklistPicInput"></div>
+                <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="checklistStatusInput"><option value="Waiting">Waiting</option><option value="Progress">Progress</option><option value="Success">Success</option></select></div>
+                <div class="form-group"><label class="form-label">Remarks</label><textarea class="form-textarea" id="checklistRemarksInput"></textarea></div>
+                <div class="modal-footer"><button class="btn btn-sm" onclick="closeChecklistModal()">Batal</button><button class="btn btn-primary btn-sm" onclick="saveChecklist()">Simpan</button></div>
+            </div></div>
+    </div>
+    <!-- Mahar Modal -->
+    <div class="modal-overlay" id="maharModalOverlay" style="display:none;">
+        <div class="modal"><div class="modal-header"><span class="modal-title" id="maharModalTitle">Tambah Item Mahar</span><button class="modal-close" onclick="closeMaharModal()"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">Nama Item</label><input type="text" class="form-input" id="maharNameInput"></div>
+                <div class="form-group"><label class="form-label">Deskripsi</label><input type="text" class="form-input" id="maharDescInput" placeholder="2.03 gram"></div>
+                <div class="form-row"><div class="form-group"><label class="form-label">Qty</label><input type="number" class="form-input" id="maharQtyInput" min="1" value="1"></div><div class="form-group"><label class="form-label">Harga (Rp)</label><input type="number" class="form-input" id="maharPriceInput" min="0" value="0"></div></div>
+                <div class="form-group"><label class="form-label">Catatan</label><textarea class="form-textarea" id="maharRemarksInput"></textarea></div>
+                <div class="modal-footer"><button class="btn btn-sm" onclick="closeMaharModal()">Batal</button><button class="btn btn-primary btn-sm" onclick="saveMahar()">Simpan</button></div>
+            </div></div>
+    </div>
+    <!-- Wedding Date Modal -->
+    <div class="modal-overlay" id="weddingDateModalOverlay" style="display:none;">
+        <div class="modal"><div class="modal-header"><span class="modal-title">Set Wedding Date</span><button class="modal-close" onclick="closeWeddingDateModal()"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+            <div class="modal-body">
+                <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:4px;">Pilih tanggal pernikahan untuk menghitung countdown dan progress perencanaan.</p>
+                <div class="form-group"><label class="form-label">Tanggal Pernikahan</label><input type="date" class="form-input" id="weddingDateInput"></div>
+                <div class="modal-footer"><button class="btn btn-sm" onclick="closeWeddingDateModal()">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveWeddingDate()">Save</button></div>
+            </div></div>
+    </div>
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModalOverlay" style="display:none;">
+        <div class="modal"><div class="modal-header"><span class="modal-title" id="confirmModalTitle">Konfirmasi</span><button class="modal-close" onclick="closeConfirmModal()"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+            <div class="modal-body" style="text-align:center;">
+                <div class="confirm-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                <p id="confirmModalMessage" style="margin-bottom:6px;"></p>
+                <div class="modal-footer" style="justify-content:center;"><button class="btn btn-sm" onclick="closeConfirmModal()">Batal</button><button class="btn btn-danger btn-sm" id="confirmModalDeleteBtn">Hapus</button></div>
+            </div></div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;"><div class="loading-box"><div class="spinner"></div><span id="loadingText">Generating PDF...</span></div></div>
+
+    <script>
+        (function() {
+            const STORAGE_BUDGET = 'wedding_planner_data_v2';
+            const STORAGE_CHECKLIST = 'wedding_checklist_data';
+            const STORAGE_MAHAR = 'wedding_mahar_data';
+            const STORAGE_WEDDING_DATE = 'wedding_date';
+            const THEME_KEY = 'wedding_planner_theme';
+            let activeTab = 'dashboard';
+            const gid = () => 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+            const defBudget = () => ({ categories: [
+                    { id: gid(), name: 'Pakaian', collapsed: false, items: [{ id: gid(), name: 'Baju Akad CPW',
+                            qty: 1, price: 0, status: 'Waiting', notes: '' }, { id: gid(), name: 'Gaun CPW', qty: 1,
+                            price: 0, status: 'Waiting', notes: '' }, { id: gid(),
+                            name: 'Baju Seragam Keluarga CPW', qty: 1, price: 0, status: 'Waiting', notes: '' }, { id: gid(),
+                            name: 'Baju Akad CPP', qty: 1, price: 0, status: 'Waiting', notes: '' }, { id: gid(),
+                            name: 'Jas/Baju CPP', qty: 7, price: 0, status: 'Waiting', notes: '' }, { id: gid(),
+                            name: 'Baju Seragam Keluarga CPP', qty: 4, price: 0, status: 'Waiting', notes: '' }] },
+                    { id: gid(), name: 'Dekorasi', collapsed: false, items: [{ id: gid(), name: 'Dekorasi', qty: 1,
+                            price: 0, status: 'Waiting', notes: '' }, { id: gid(), name: 'Dokumentasi', qty: 1,
+                            price: 0, status: 'Waiting', notes: '' }] },
+                    { id: gid(), name: 'Vendor', collapsed: false, items: [{ id: gid(), name: 'MC & LO', qty: 1,
+                            price: 1000000, status: 'OnNego', notes: '' }] },
+                    { id: gid(), name: 'Konsumsi', collapsed: false, items: [{ id: gid(), name: 'Masak Sendiri',
+                            qty: 4, price: 0, status: 'Waiting',
+                        notes: '4 Menu - Udang, Ayam, Daging, Karedok' }] },
+                    { id: gid(), name: 'Makeup', collapsed: false, items: [{ id: gid(), name: 'Makeup Artist', qty: 1,
+                            price: 0, status: 'Waiting', notes: '' }] },
+                    { id: gid(), name: 'Souvenir', collapsed: false, items: [{ id: gid(), name: 'Souvenir', qty: 1,
+                            price: 0, status: 'Waiting', notes: '' }] }
+                ] });
+            const defChecklist = () => [{ id: gid(), taskName: 'Booking Gedung', category: 'Administrasi',
+                    deadline: '2026-01-15', pic: 'CPW', status: 'Success', remarks: 'Sudah DP 50%' }, { id: gid(),
+                    taskName: 'Dekorasi Pelaminan', category: 'Dekorasi', deadline: '2026-05-20', pic: 'CPP',
+                    status: 'Progress', remarks: 'Hubungi vendor' }, { id: gid(), taskName: 'Dokumentasi & Foto',
+                    category: 'Dokumentasi', deadline: '2026-04-10', pic: 'CPW', status: 'Waiting', remarks: '' },
+                { id: gid(), taskName: 'Catering & Konsumsi', category: 'Konsumsi', deadline: '2026-03-25',
+                    pic: 'CPP', status: 'Progress', remarks: 'Menu sudah dipilih' }, { id: gid(),
+                    taskName: 'Souvenir Tamu', category: 'Souvenir', deadline: '2026-06-01', pic: 'CPW',
+                    status: 'Waiting', remarks: '200 pcs' }
+            ];
+            const defMahar = () => [{ id: gid(), itemName: 'Cincin', description: '2.03 gram', qty: 1,
+                completed: true, totalPrice: 2020000, remarks: 'Emas 24K' }, { id: gid(), itemName: 'Kalung',
+                description: '4.24 gram', qty: 1, completed: false, totalPrice: 4240000, remarks: 'Rantai emas' },
+                { id: gid(), itemName: 'Gelang', description: '4.31 gram', qty: 1, completed: false,
+                    totalPrice: 4310000, remarks: '' }, { id: gid(), itemName: 'Anting', description: '2.28 gram',
+                    qty: 1, completed: false, totalPrice: 2280000, remarks: '' }, { id: gid(),
+                    itemName: 'Ongkos Pembuatan', description: 'Biaya pembuatan', qty: 1, completed: true,
+                    totalPrice: 5000000, remarks: 'Semua perhiasan' }
+            ];
+
+            const load = (k, fb) => { try { const r = localStorage.getItem(k); if (r) return JSON.parse(r); } catch (
+                e) {} return fb(); };
+            const save = (k, d) => { try { localStorage.setItem(k, JSON.stringify(d)); return true; } catch (e) {
+                    showToast('Penyimpanan penuh. Silakan kurangi data.'); return false; } };
+
+            let budgetData = load(STORAGE_BUDGET, defBudget);
+            let checklistData = load(STORAGE_CHECKLIST, defChecklist);
+            let maharData = load(STORAGE_MAHAR, defMahar);
+            let weddingDate = localStorage.getItem(STORAGE_WEDDING_DATE) || '';
+            let editing = { item: null, cat: null, checklist: null, mahar: null };
+            let activePopup = null,
+                undoTO = null;
+            let confirmCallback = null;
+
+            const persistAll = () => { save(STORAGE_BUDGET, budgetData);
+                save(STORAGE_CHECKLIST, checklistData);
+                save(STORAGE_MAHAR, maharData);
+                updateWeddingDateDisplay();
+                renderActive(); };
+            const getTheme = () => localStorage.getItem(THEME_KEY) || 'light';
+            const applyTheme = t => { const isDark = t === 'dark';
+                document.body.classList.toggle('dark', isDark);
+                document.getElementById('sunIcon').style.display = isDark ? 'none' : '';
+                document.getElementById('moonIcon').style.display = isDark ? '' : 'none'; };
+            window.toggleTheme = () => { const n = document.body.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem(THEME_KEY, n);
+                applyTheme(n); };
+            applyTheme(getTheme());
+
+            const escHtml = s => { const d = document.createElement('div');
+                d.textContent = s; return d.innerHTML; };
+            const fmtPrice = n => n === 0 ? 'Rp 0' : 'Rp ' + n.toLocaleString('id-ID').replace(/,/g, '.');
+            const fmtPriceShort = n => { if (n === 0) return 'Rp 0'; if (n >= 1e6) return 'Rp ' + (n / 1e6).toFixed(1)
+                    .replace('.0', '') + ' jt'; if (n >= 1e3) return 'Rp ' + (n / 1e3).toFixed(0) + ' rb'; return 'Rp ' +
+                    n.toLocaleString('id-ID'); };
+            const getItemSubtotal = it => (it.price || 0) * (it.qty || 1);
+            const getCatTotal = c => c.items.reduce((s, i) => s + getItemSubtotal(i), 0);
+            const getGrandTotal = () => budgetData.categories.reduce((s, c) => s + getCatTotal(c), 0);
+            const getBudgetDone = () => budgetData.categories.reduce((s, c) => s + c.items.filter(i => i.status ===
+                'Done').length, 0);
+            const getBudgetTotal = () => budgetData.categories.reduce((s, c) => s + c.items.length, 0);
+            const getChecklistDone = () => checklistData.filter(t => t.status === 'Success').length;
+            const getMaharDone = () => maharData.filter(m => m.completed).length;
+            const getMaharTotalPrice = () => maharData.reduce((s, m) => s + m.totalPrice, 0);
+            const statusLabel = s => ({ Waiting: 'Waiting', OnNego: 'On Nego', OnProgress: 'On Progress',
+                Done: 'Done' }[s] || s);
+            const statusCls = s => ({ Waiting: 'waiting', OnNego: 'onnego', OnProgress: 'progress', Done: 'done',
+                Success: 'done', Progress: 'progress' }[s] || 'waiting');
+            const linkify = t => t ? t.replace(/(https?:\/\/[^\s<]+)/gi,
+                '<a href="$1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">$1</a>') : '';
+            const deadlineCls = dl => { if (!dl) return 'deadline-ontrack'; const d = new Date(dl),
+                    n = new Date();
+                n.setHours(0, 0, 0, 0); if (d < n) return 'deadline-overdue'; if (Math.ceil((d - n) / 86400000) <= 7)
+                    return 'deadline-dueSoon'; return 'deadline-ontrack'; };
+            const deadlineLabel = dl => ({ 'deadline-overdue': 'Overdue', 'deadline-dueSoon': 'Due Soon',
+                'deadline-ontrack': 'On Track' }[deadlineCls(dl)] || 'On Track');
+
+            // ── TOAST ──
+            const showToast = (msg, undoFn) => { const c = document.getElementById('toastContainer'); const t = document
+                    .createElement('div');
+                t.className = 'toast';
+                t.innerHTML = '<span>' + escHtml(msg) + '</span>'; if (undoFn) { const b = document.createElement(
+                        'button');
+                    b.className = 'toast-undo';
+                    b.textContent = 'Undo';
+                    b.onclick = e => { e.stopPropagation(); if (undoTO) clearTimeout(undoTO);
+                        undoFn();
+                        t.classList.add('fading');
+                        setTimeout(() => t.remove(), 300); };
+                    t.appendChild(b); } const closeBtn = document.createElement('button');
+                closeBtn.className = 'toast-close';
+                closeBtn.innerHTML =
+                    '<svg class="icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+                closeBtn.onclick = () => { t.classList.add('fading');
+                    setTimeout(() => t.remove(), 300); };
+                t.appendChild(closeBtn);
+                c.appendChild(t); const dur = undoFn ? 5000 : 3500; const timer = setTimeout(() => { t.classList.add(
+                        'fading');
+                    setTimeout(() => t.remove(), 300); }, dur); if (undoFn) undoTO = timer; };
+
+            // ── CONFIRMATION MODAL ──
+            const openConfirmModal = (title, message, onDelete) => {
+                document.getElementById('confirmModalTitle').textContent = title;
+                document.getElementById('confirmModalMessage').textContent = message;
+                document.getElementById('confirmModalDeleteBtn').onclick = () => { closeConfirmModal();
+                    onDelete(); };
+                document.getElementById('confirmModalOverlay').style.display = 'flex';
+            };
+            const closeConfirmModal = () => { document.getElementById('confirmModalOverlay').style.display = 'none';
+                confirmCallback = null; };
+            document.getElementById('confirmModalOverlay').addEventListener('click', function(e) { if (e.target === this)
+                    closeConfirmModal(); });
+
+            // ── WEDDING DATE MODAL ──
+            window.openWeddingDateModal = () => {
+                document.getElementById('weddingDateInput').value = weddingDate || '';
+                document.getElementById('weddingDateModalOverlay').style.display = 'flex';
+                setTimeout(() => document.getElementById('weddingDateInput').focus(), 80);
+            };
+            window.closeWeddingDateModal = () => { document.getElementById('weddingDateModalOverlay').style.display =
+                    'none'; };
+            window.saveWeddingDate = () => { const d = document.getElementById('weddingDateInput').value; if (d && !isNaN(
+                        new Date(d).getTime())) { weddingDate = d;
+                    localStorage.setItem(STORAGE_WEDDING_DATE, d); } else if (d === '') { weddingDate = '';
+                    localStorage.removeItem(STORAGE_WEDDING_DATE); }
+                closeWeddingDateModal();
+                updateWeddingDateDisplay();
+                showToast(weddingDate ? 'Wedding date berhasil disimpan.' : 'Wedding date dihapus.'); };
+            document.getElementById('weddingDateModalOverlay').addEventListener('click', function(e) { if (e.target ===
+                    this) closeWeddingDateModal(); });
+
+            const updateWeddingDateDisplay = () => { const el = document.getElementById('weddingDateDisplay'); const cd =
+                    document.getElementById('headerCountdown'); if (weddingDate) { el.textContent = new Date(weddingDate)
+                        .toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); const d = new Date(
+                        weddingDate),
+                        n = new Date();
+                    n.setHours(0, 0, 0, 0); const diff = Math.ceil((d - n) / 86400000); if (diff > 0) { cd.style.display =
+                            '';
+                        cd.textContent = diff + ' hari lagi'; } else if (diff === 0) { cd.style.display = '';
+                        cd.textContent = 'Hari ini!'; } else { cd.style.display = '';
+                        cd.textContent = 'Sudah lewat'; } } else { el.textContent = 'Set wedding date';
+                    cd.style.display = 'none'; } };
+            updateWeddingDateDisplay();
+
+            // ── TAB SWITCHING ──
+            window.switchTab = t => { activeTab = t;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector(`.tab-btn[data-tab="${t}"]`).classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                document.getElementById('tab-' + t).style.display = 'block';
+                closePopup();
+                renderActive(); };
+            const renderActive = () => { if (activeTab === 'dashboard') renderDashboard(); else if (activeTab ===
+                    'budget') renderBudget(); else if (activeTab === 'checklist') renderChecklist(); else if (activeTab ===
+                    'mahar') renderMahar(); };
+
+            // ── DASHBOARD ──
+            const renderDashboard = () => { const bt = getGrandTotal(),
+                    bDone = getBudgetDone(),
+                    bTot = getBudgetTotal(),
+                    cDone = getChecklistDone(),
+                    cTot = checklistData.length,
+                    mDone = getMaharDone(),
+                    mTot = maharData.length,
+                    mt = getMaharTotalPrice(); const g = document.getElementById('dashboardGrid');
+                g.innerHTML = `
+                <div class="hero-card primary-card" onclick="switchTab('budget')">
+                    <div class="hero-label">Total Wedding Budget</div>
+                    <div class="hero-value gold">${fmtPriceShort(bt)}</div>
+                    <div class="hero-sub">${bDone} dari ${bTot} item selesai</div>
+                    <div class="hero-progress"><div class="hero-progress-fill gold" style="width:${bTot?Math.round(bDone/bTot*100):0}%;"></div></div>
+                </div>
+                <div class="hero-card" onclick="switchTab('checklist')">
+                    <div class="hero-label">Checklist</div>
+                    <div class="hero-value">${cDone}<span style="font-size:0.9rem;font-weight:400;color:var(--text-tertiary);">/${cTot}</span></div>
+                    <div class="hero-sub">${cTot-cDone} task remaining</div>
+                    <div class="hero-progress"><div class="hero-progress-fill sage" style="width:${cTot?Math.round(cDone/cTot*100):0}%;"></div></div>
+                </div>
+                <div class="hero-card" onclick="switchTab('mahar')">
+                    <div class="hero-label">Mahar</div>
+                    <div class="hero-value">${mDone}<span style="font-size:0.9rem;font-weight:400;color:var(--text-tertiary);">/${mTot}</span></div>
+                    <div class="hero-sub">Total: ${fmtPriceShort(mt)}</div>
+                    <div class="hero-progress"><div class="hero-progress-fill pink" style="width:${mTot?Math.round(mDone/mTot*100):0}%;"></div></div>
+                </div>
+                <div class="hero-card" onclick="switchTab('budget')">
+                    <div class="hero-label">Kategori Budget</div>
+                    <div class="hero-value">${budgetData.categories.length}</div>
+                    <div class="hero-sub">${bTot} item terdaftar</div>
+                </div>`;
+            };
+
+            // ── BUDGET ──
+            const renderBudget = () => { document.getElementById('summaryPanel').innerHTML = `
+                <div class="stat-card"><div class="stat-label">Kategori</div><div class="stat-value">${budgetData.categories.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Total Item</div><div class="stat-value">${getBudgetTotal()}</div></div>
+                <div class="stat-card"><div class="stat-label">Grand Total</div><div class="stat-value gold">${fmtPriceShort(getGrandTotal())}</div></div>
+                <div class="stat-card"><div class="stat-label">Selesai</div><div class="stat-value">${getBudgetDone()}/${getBudgetTotal()}</div></div>`;
+                const pct = getBudgetTotal() ? Math.round(getBudgetDone() / getBudgetTotal() * 100) : 0;
+                document.getElementById('progressSection').innerHTML =
+                    `<div class="progress-bar-header"><span>Progress Keseluruhan</span><span>${pct}%</span></div><div class="progress-bar-outer"><div class="progress-bar-inner${pct===100?' complete':''}" style="width:${pct}%;"></div></div>`;
+                const dc = ['var(--gold)', 'var(--sage)', 'var(--pink)', '#E8A87C', '#C4A0D4', '#7EC8C8', '#D4A0A0',
+                '#A0B4D4'];
+                document.getElementById('categoriesContainer').innerHTML = budgetData.categories.map((cat, i) => `
+                <div class="category-card${cat.collapsed?'':' expanded'}" data-cid="${cat.id}">
+                    <div class="category-header" onclick="toggleCategory('${cat.id}')">
+                        <div class="category-header-left"><span class="category-dot" style="background:${dc[i%dc.length]};"></span><span class="category-name">${escHtml(cat.name)}</span></div>
+                        <div class="category-meta"><span>${cat.items.length} item</span><span class="category-subtotal">${fmtPriceShort(getCatTotal(cat))}</span><span class="category-chevron"><svg class="icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+                    </div>
+                    <div class="category-body"><div class="category-body-inner">
+                        ${cat.items.length===0?'<div style="text-align:center;padding:14px;color:var(--text-tertiary);font-size:0.78rem;">Belum ada item</div>':cat.items.map(it=>`
+                        <div class="item-row" data-iid="${it.id}" data-cid="${cat.id}">
+                            <div class="item-info"><div class="item-name">${escHtml(it.name)}</div>${it.notes?`<div class="item-notes">${linkify(it.notes.length>45?it.notes.substring(0,45)+'...':it.notes)}</div>`:''}</div>
+                            <span class="item-qty">Qty: ${it.qty}</span>
+                            <span class="item-price">${fmtPrice(getItemSubtotal(it))}</span>
+                            <span class="status-badge ${statusCls(it.status)}" onclick="event.stopPropagation();togglePopup(event,'${cat.id}','${it.id}')"><span class="status-dot-sm" style="background:currentColor;"></span>${statusLabel(it.status)}</span>
+                            <div class="item-actions">
+                                <button class="btn btn-icon btn-ghost" style="width:28px;height:28px;" onclick="event.stopPropagation();openItemModal('${cat.id}','${it.id}')"><svg class="icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+                                <button class="btn btn-icon btn-ghost" style="width:28px;height:28px;color:#e88;" onclick="event.stopPropagation();deleteItem('${cat.id}','${it.id}')"><svg class="icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                            </div>
+                        </div>`).join('')}
+                        <button class="add-btn" onclick="event.stopPropagation();openItemModal('${cat.id}')"><svg class="icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Tambah Item</button>
+                        <div style="margin-top:6px;display:flex;gap:5px;justify-content:flex-end;">
+                            <button class="btn btn-xs btn-ghost" onclick="event.stopPropagation();openCategoryModal('${cat.id}')">Edit</button>
+                            <button class="btn btn-xs btn-ghost" style="color:#e88;" onclick="event.stopPropagation();deleteCategory('${cat.id}')">Hapus</button>
+                        </div>
+                    </div></div>
+                </div>`).join(''); };
+
+            window.toggleCategory = id => { const c = budgetData.categories.find(x => x.id === id); if (c) { c.collapsed = !
+                        c.collapsed;
+                    persistAll(); } };
+
+            // ── STATUS POPUP ──
+            window.togglePopup = (e, cid, iid) => { e.stopPropagation(); const badge = e.currentTarget; if (activePopup &&
+                    activePopup.cid === cid && activePopup.iid === iid) { closePopup(); return; }
+                closePopup(); const pop = document.createElement('div');
+                pop.className = 'status-popup';
+                ['Waiting', 'OnNego', 'OnProgress', 'Done'].forEach(s => { const o = document.createElement('button');
+                    o.className = 'status-option';
+                    o.innerHTML =
+                        `<span class="status-dot-sm" style="background:${ {Waiting:'#A3A39E',OnNego:'#D4A040',OnProgress:'#5B9BD5',Done:'#7DB87D'}[s]};"></span> ${statusLabel(s)}`;
+                    o.onclick = ev => { ev.stopPropagation();
+                        changeStatus(cid, iid, s);
+                        closePopup(); };
+                    pop.appendChild(o); });
+                document.body.appendChild(pop); const r = badge.getBoundingClientRect(); let l = r.left + r.width / 2 -
+                    75,
+                    t = r.bottom + 5; if (l < 6) l = 6; if (l + 150 > innerWidth - 6) l = innerWidth - 156; if (t + 170 >
+                        innerHeight) t = r.top - 175; if (t < 6) t = 6;
+                pop.style.cssText = `position:fixed;left:${l}px;top:${t}px;z-index:300;`;
+                activePopup = { cid, iid, el: pop, badge };
+                setTimeout(() => document.addEventListener('click', closeOut, { once: true }), 40); };
+            const closePopup = () => { if (activePopup && activePopup.el && activePopup.el.parentNode) activePopup.el
+                .remove();
+                activePopup = null; };
+            const closeOut = ev => { if (activePopup && activePopup.el && !activePopup.el.contains(ev.target) && (!activePopup
+                    .badge || !activePopup.badge.contains(ev.target))) closePopup(); };
+            const changeStatus = (cid, iid, s) => { const c = budgetData.categories.find(x => x.id === cid); if (!c) return;
+                const it = c.items.find(x => x.id === iid); if (!it) return;
+                it.status = s;
+                persistAll();
+                showToast('Status: ' + statusLabel(s)); };
+
+            // ── ITEM MODAL ──
+            window.openItemModal = (cid, iid) => { closePopup();
+                editing.item = { cid, iid: iid || null }; const m = document.getElementById('itemModalOverlay');
+                document.getElementById('itemModalTitle').textContent = iid ? 'Edit Item' : 'Tambah Item'; if (iid) { const it =
+                        budgetData.categories.find(c => c.id === cid)?.items.find(x => x.id === iid); if (it) { document
+                            .getElementById('itemNameInput').value = it.name;
+                        document.getElementById('itemQtyInput').value = it.qty;
+                        document.getElementById('itemPriceInput').value = it.price;
+                        document.getElementById('itemStatusInput').value = it.status;
+                        document.getElementById('itemNotesInput').value = it.notes || ''; } } else { ['itemNameInput',
+                        'itemQtyInput', 'itemPriceInput', 'itemNotesInput'
+                    ].forEach(id => document.getElementById(id).value = '');
+                    document.getElementById('itemQtyInput').value = '1';
+                    document.getElementById('itemPriceInput').value = '0';
+                    document.getElementById('itemStatusInput').value = 'Waiting'; }
+                m.style.display = 'flex';
+                setTimeout(() => document.getElementById('itemNameInput').focus(), 80); };
+            window.closeItemModal = () => { document.getElementById('itemModalOverlay').style.display = 'none';
+                editing.item = null; };
+            window.saveItem = () => { const n = document.getElementById('itemNameInput').value.trim(); if (!n) { showToast(
+                        'Nama item wajib diisi.'); return; } const obj = { id: editing.item.iid || gid(), name: n,
+                    qty: parseInt(document.getElementById('itemQtyInput').value) || 1, price: parseInt(document
+                        .getElementById('itemPriceInput').value) || 0, status: document.getElementById('itemStatusInput')
+                        .value, notes: document.getElementById('itemNotesInput').value.trim() }; const cat = budgetData
+                    .categories.find(c => c.id === editing.item.cid); if (!cat) return; if (editing.item.iid) { const idx = cat
+                        .items.findIndex(x => x.id === editing.item.iid); if (idx > -1) cat.items[idx] = obj; } else cat.items
+                    .push(obj);
+                closeItemModal();
+                persistAll();
+                showToast(editing.item.iid ? 'Item berhasil diupdate.' : 'Item berhasil ditambahkan.'); };
+            window.deleteItem = (cid, iid) => { closePopup(); const cat = budgetData.categories.find(c => c.id === cid); if (
+                    !cat) return; const idx = cat.items.findIndex(x => x.id === iid); if (idx === -1) return; const del = cat
+                    .items[idx];
+                openConfirmModal('Hapus Item?', 'Item "' + del.name +
+                    '" akan dihapus. Anda dapat mengembalikannya dengan tombol Undo.', () => { cat.items.splice(idx, 1);
+                    persistAll();
+                    showToast('Item dihapus.', () => { const c2 = budgetData.categories.find(c => c.id === cid); if (
+                            c2) { c2.items.splice(idx, 0, del);
+                            persistAll();
+                            showToast('Item dikembalikan.'); } }); }); };
+
+            // ── CATEGORY MODAL ──
+            window.openCategoryModal = (cid) => { closePopup();
+                editing.cat = cid || null;
+                document.getElementById('categoryModalTitle').textContent = cid ? 'Edit Kategori' : 'Tambah Kategori';
+                document.getElementById('categoryNameInput').value = cid ? (budgetData.categories.find(c => c.id === cid)
+                    ?.name || '') : '';
+                document.getElementById('categoryModalOverlay').style.display = 'flex';
+                setTimeout(() => document.getElementById('categoryNameInput').focus(), 80); };
+            window.closeCategoryModal = () => { document.getElementById('categoryModalOverlay').style.display = 'none';
+                editing.cat = null; };
+            window.saveCategory = () => { const n = document.getElementById('categoryNameInput').value.trim(); if (!n) {
+                    showToast('Nama kategori wajib diisi.'); return; } if (editing.cat) { const c = budgetData.categories
+                        .find(x => x.id === editing.cat); if (c) c.name = n; } else budgetData.categories.push({ id: gid(),
+                    name: n, collapsed: false, items: [] });
+                closeCategoryModal();
+                persistAll();
+                showToast(editing.cat ? 'Kategori berhasil diupdate.' : 'Kategori berhasil ditambahkan.'); };
+            window.deleteCategory = (cid) => { closePopup(); const idx = budgetData.categories.findIndex(c => c.id === cid); if (
+                    idx === -1) return; const del = budgetData.categories[idx];
+                openConfirmModal('Hapus Kategori?', 'Seluruh item di dalam kategori "' + del.name +
+                    '" akan ikut terhapus. Anda dapat mengembalikannya dengan tombol Undo.', () => { budgetData.categories
+                        .splice(idx, 1);
+                    persistAll();
+                    showToast('Kategori dihapus.', () => { budgetData.categories.splice(idx, 0, del);
+                        persistAll();
+                        showToast('Kategori dikembalikan.'); }); }); };
+
+            // ── CHECKLIST ──
+            let clFilter = { search: '', status: '', cat: '', sort: '' };
+            const renderChecklist = () => { const tot = checklistData.length,
+                    done = getChecklistDone();
+                document.getElementById('checklistSummary').innerHTML = `
+                <div class="stat-card"><div class="stat-label">Total Task</div><div class="stat-value">${tot}</div></div>
+                <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value" style="color:var(--sage-dark);">${done}</div></div>
+                <div class="stat-card"><div class="stat-label">Remaining</div><div class="stat-value">${tot-done}</div></div>
+                <div class="stat-card"><div class="stat-label">Progress</div><div class="stat-value">${tot?Math.round(done/tot*100):0}%</div></div>`;
+                const cats = [...new Set(checklistData.map(t => t.category))];
+                document.getElementById('checklistFilter').innerHTML = `
+                <input class="filter-input" value="${clFilter.search}" placeholder="Cari task..." oninput="updateClFilter('search',this.value)">
+                <select class="filter-select" onchange="updateClFilter('status',this.value)"><option value="">All Status</option><option value="Waiting" ${clFilter.status==='Waiting'?'selected':''}>Waiting</option><option value="Progress" ${clFilter.status==='Progress'?'selected':''}>Progress</option><option value="Success" ${clFilter.status==='Success'?'selected':''}>Success</option></select>
+                <select class="filter-select" onchange="updateClFilter('cat',this.value)"><option value="">All Category</option>${cats.map(c=>`<option value="${c}" ${clFilter.cat===c?'selected':''}>${c}</option>`).join('')}</select>
+                <select class="filter-select" onchange="updateClFilter('sort',this.value)"><option value="">Sort</option><option value="asc" ${clFilter.sort==='asc'?'selected':''}>Deadline ↑</option><option value="desc" ${clFilter.sort==='desc'?'selected':''}>Deadline ↓</option></select>`;
+                renderClTable();
+                renderClCards(); };
+            window.updateClFilter = (k, v) => { clFilter[k] = v;
+                renderChecklist(); };
+            const getFilteredCl = () => { let d = [...checklistData]; if (clFilter.search) { const q = clFilter.search
+                    .toLowerCase();
+                    d = d.filter(t => t.taskName.toLowerCase().includes(q) || t.category.toLowerCase().includes(q) || (t
+                        .pic || '').toLowerCase().includes(q)); } if (clFilter.status) d = d.filter(t => t.status === clFilter
+                    .status); if (clFilter.cat) d = d.filter(t => t.category === clFilter.cat); if (clFilter.sort === 'asc')
+                    d.sort((a, b) => new Date(a.deadline) - new Date(b.deadline)); else if (clFilter.sort === 'desc') d.sort((
+                        a, b) => new Date(b.deadline) - new Date(a.deadline)); return d; };
+            const renderClTable = () => { const d = getFilteredCl();
+                document.getElementById('checklistTableWrap').innerHTML = `<table class="checklist-table"><thead><tr><th>Task</th><th>Kategori</th><th>Deadline</th><th>PIC</th><th>Status</th><th>Remarks</th><th></th></tr></thead><tbody>${d.map(t=>`
+                <tr><td><strong>${escHtml(t.taskName)}</strong></td><td>${escHtml(t.category)}</td><td><span class="deadline-badge ${deadlineCls(t.deadline)}">${deadlineLabel(t.deadline)} ${t.deadline?new Date(t.deadline).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):''}</span></td><td>${escHtml(t.pic||'')}</td><td><span class="status-badge ${statusCls(t.status)}" style="cursor:default;"><span class="status-dot-sm" style="background:currentColor;"></span>${t.status}</span></td><td style="font-size:0.7rem;color:var(--text-tertiary);">${escHtml(t.remarks||'')}</td><td><div style="display:flex;gap:2px;">
+                <button class="btn btn-icon btn-ghost" style="width:26px;height:26px;" onclick="openChecklistModal('${t.id}')"><svg class="icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+                <button class="btn btn-icon btn-ghost" style="width:26px;height:26px;color:#e88;" onclick="deleteChecklist('${t.id}')"><svg class="icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div></td></tr>`).join('')}</tbody></table>`;
+                if (d.length === 0) document.getElementById('checklistTableWrap').innerHTML +=
+                    '<div style="text-align:center;padding:16px;color:var(--text-tertiary);">Tidak ada task.</div>'; };
+            const renderClCards = () => { const d = getFilteredCl();
+                document.getElementById('checklistCards').innerHTML = d.map(t => `
+                <div class="checklist-card">
+                    <div class="checklist-card-row"><strong>${escHtml(t.taskName)}</strong></div>
+                    <div class="checklist-card-row"><span class="cl-card-label">Kategori:</span> ${escHtml(t.category)}</div>
+                    <div class="checklist-card-row"><span class="cl-card-label">Deadline:</span> <span class="deadline-badge ${deadlineCls(t.deadline)}">${deadlineLabel(t.deadline)} ${t.deadline?new Date(t.deadline).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):''}</span></div>
+                    <div class="checklist-card-row"><span class="cl-card-label">PIC:</span> ${escHtml(t.pic||'')}</div>
+                    <div class="checklist-card-row"><span class="cl-card-label">Status:</span> <span class="status-badge ${statusCls(t.status)}" style="cursor:default;"><span class="status-dot-sm" style="background:currentColor;"></span>${t.status}</span></div>
+                    <div class="checklist-card-row" style="justify-content:flex-end;gap:4px;">
+                        <button class="btn btn-xs btn-ghost" onclick="openChecklistModal('${t.id}')">Edit</button>
+                        <button class="btn btn-xs btn-ghost" style="color:#e88;" onclick="deleteChecklist('${t.id}')">Hapus</button>
+                    </div>
+                </div>`).join(''); if (d.length === 0) document.getElementById('checklistCards').innerHTML =
+                    '<div style="text-align:center;padding:16px;color:var(--text-tertiary);">Tidak ada task.</div>'; };
+            window.openChecklistModal = (id) => { closePopup();
+                editing.checklist = id || null;
+                document.getElementById('checklistModalTitle').textContent = id ? 'Edit Task' : 'Tambah Task'; if (id) { const t =
+                        checklistData.find(x => x.id === id); if (t) { document.getElementById('checklistTaskInput').value = t
+                            .taskName;
+                        document.getElementById('checklistCatInput').value = t.category;
+                        document.getElementById('checklistDeadlineInput').value = t.deadline || '';
+                        document.getElementById('checklistPicInput').value = t.pic || '';
+                        document.getElementById('checklistStatusInput').value = t.status;
+                        document.getElementById('checklistRemarksInput').value = t.remarks || ''; } } else { [
+                        'checklistTaskInput', 'checklistCatInput', 'checklistDeadlineInput', 'checklistPicInput',
+                        'checklistRemarksInput'
+                    ].forEach(id => document.getElementById(id).value = '');
+                    document.getElementById('checklistStatusInput').value = 'Waiting'; }
+                document.getElementById('checklistModalOverlay').style.display = 'flex'; };
+            window.closeChecklistModal = () => { document.getElementById('checklistModalOverlay').style.display = 'none';
+                editing.checklist = null; };
+            window.saveChecklist = () => { const tn = document.getElementById('checklistTaskInput').value.trim(); if (!tn) {
+                    showToast('Task wajib diisi.'); return; } const obj = { id: editing.checklist || gid(), taskName: tn,
+                    category: document.getElementById('checklistCatInput').value.trim(), deadline: document.getElementById(
+                        'checklistDeadlineInput').value, pic: document.getElementById('checklistPicInput').value.trim(),
+                    status: document.getElementById('checklistStatusInput').value, remarks: document.getElementById(
+                        'checklistRemarksInput').value.trim() }; if (editing.checklist) { const idx = checklistData.findIndex(
+                        x => x.id === editing.checklist); if (idx > -1) checklistData[idx] = obj; } else checklistData.push(
+                    obj);
+                closeChecklistModal();
+                save(STORAGE_CHECKLIST, checklistData);
+                renderChecklist();
+                showToast(editing.checklist ? 'Task berhasil diupdate.' : 'Task berhasil ditambahkan.'); };
+            window.deleteChecklist = (id) => { const idx = checklistData.findIndex(x => x.id === id); if (idx === -1) return;
+                const del = checklistData[idx];
+                openConfirmModal('Hapus Task?', 'Task "' + del.taskName +
+                    '" akan dihapus. Anda dapat mengembalikannya dengan tombol Undo.', () => { checklistData.splice(idx, 1);
+                    save(STORAGE_CHECKLIST, checklistData);
+                    renderChecklist();
+                    showToast('Task dihapus.', () => { checklistData.splice(idx, 0, del);
+                        save(STORAGE_CHECKLIST, checklistData);
+                        renderChecklist();
+                        showToast('Task dikembalikan.'); }); }); };
+
+            // ── MAHAR ──
+            const renderMahar = () => { document.getElementById('maharSummary').innerHTML = `
+                <div class="stat-card"><div class="stat-label">Total Mahar</div><div class="stat-value gold">${fmtPriceShort(getMaharTotalPrice())}</div></div>
+                <div class="stat-card"><div class="stat-label">Item Selesai</div><div class="stat-value">${getMaharDone()}/${maharData.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Progress</div><div class="stat-value">${maharData.length?Math.round(getMaharDone()/maharData.length*100):0}%</div></div>`;
+                document.getElementById('maharList').innerHTML = maharData.map(m => `
+                <div class="mahar-card">
+                    <div class="mahar-check-circle${m.completed?' done':''}" onclick="toggleMahar('${m.id}')">${m.completed?'<svg class="icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
+                    <div class="mahar-info"><div class="mahar-name">${escHtml(m.itemName)}</div><div class="mahar-desc">${escHtml(m.description)} x${m.qty}</div>${m.remarks?`<div class="mahar-desc" style="font-style:italic;">${escHtml(m.remarks)}</div>`:''}</div>
+                    <div class="mahar-price">${fmtPrice(m.totalPrice)}</div>
+                    <div style="display:flex;gap:2px;">
+                        <button class="btn btn-icon btn-ghost" style="width:28px;height:28px;" onclick="openMaharModal('${m.id}')"><svg class="icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+                        <button class="btn btn-icon btn-ghost" style="width:28px;height:28px;color:#e88;" onclick="deleteMahar('${m.id}')"><svg class="icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                </div>`).join('') || '<div style="text-align:center;padding:16px;color:var(--text-tertiary);">Belum ada item mahar.</div>'; };
+            window.toggleMahar = (id) => { const m = maharData.find(x => x.id === id); if (m) { m.completed = !m.completed;
+                    save(STORAGE_MAHAR, maharData);
+                    renderMahar(); } };
+            window.openMaharModal = (id) => { closePopup();
+                editing.mahar = id || null;
+                document.getElementById('maharModalTitle').textContent = id ? 'Edit Item Mahar' : 'Tambah Item Mahar'; if (id) {
+                    const m = maharData.find(x => x.id === id); if (m) { document.getElementById('maharNameInput').value = m
+                            .itemName;
+                        document.getElementById('maharDescInput').value = m.description;
+                        document.getElementById('maharQtyInput').value = m.qty;
+                        document.getElementById('maharPriceInput').value = m.totalPrice;
+                        document.getElementById('maharRemarksInput').value = m.remarks || ''; } } else { ['maharNameInput',
+                        'maharDescInput', 'maharRemarksInput'
+                    ].forEach(id => document.getElementById(id).value = '');
+                    document.getElementById('maharQtyInput').value = '1';
+                    document.getElementById('maharPriceInput').value = '0'; }
+                document.getElementById('maharModalOverlay').style.display = 'flex'; };
+            window.closeMaharModal = () => { document.getElementById('maharModalOverlay').style.display = 'none';
+                editing.mahar = null; };
+            window.saveMahar = () => { const n = document.getElementById('maharNameInput').value.trim(); if (!n) { showToast(
+                        'Nama item wajib diisi.'); return; } const obj = { id: editing.mahar || gid(), itemName: n,
+                    description: document.getElementById('maharDescInput').value.trim(), qty: parseInt(document
+                        .getElementById('maharQtyInput').value) || 1, completed: editing.mahar ? (maharData.find(x => x.id ===
+                        editing.mahar)?.completed || false) : false, totalPrice: parseInt(document.getElementById(
+                        'maharPriceInput').value) || 0, remarks: document.getElementById('maharRemarksInput').value.trim() };
+                if (editing.mahar) { const idx = maharData.findIndex(x => x.id === editing.mahar); if (idx > -1) maharData[
+                        idx] = obj; } else maharData.push(obj);
+                closeMaharModal();
+                save(STORAGE_MAHAR, maharData);
+                renderMahar();
+                showToast(editing.mahar ? 'Item mahar berhasil diupdate.' : 'Item mahar berhasil ditambahkan.'); };
+            window.deleteMahar = (id) => { const idx = maharData.findIndex(x => x.id === id); if (idx === -1) return; const del =
+                    maharData[idx];
+                openConfirmModal('Hapus Item Mahar?', 'Item "' + del.itemName +
+                    '" akan dihapus. Anda dapat mengembalikannya dengan tombol Undo.', () => { maharData.splice(idx, 1);
+                    save(STORAGE_MAHAR, maharData);
+                    renderMahar();
+                    showToast('Item mahar dihapus.', () => { maharData.splice(idx, 0, del);
+                        save(STORAGE_MAHAR, maharData);
+                        renderMahar();
+                        showToast('Item mahar dikembalikan.'); }); }); };
+
+            // ── MODAL OVERLAYS ──
+            ['itemModalOverlay', 'categoryModalOverlay', 'checklistModalOverlay', 'maharModalOverlay'].forEach(id => {
+                document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) { if (id ===
+                            'itemModalOverlay') closeItemModal(); else if (id === 'categoryModalOverlay')
+                        closeCategoryModal(); else if (id === 'checklistModalOverlay') closeChecklistModal(); else
+                        closeMaharModal(); } });
+            });
+
+            // ── KEYBOARD ──
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') { ['itemModalOverlay', 'categoryModalOverlay', 'checklistModalOverlay',
+                        'maharModalOverlay', 'weddingDateModalOverlay', 'confirmModalOverlay'
+                    ].forEach(id => { if (document.getElementById(id).style.display === 'flex') { if (id ===
+                                'itemModalOverlay') closeItemModal(); else if (id === 'categoryModalOverlay')
+                            closeCategoryModal(); else if (id === 'checklistModalOverlay') closeChecklistModal();
+                        else if (id === 'maharModalOverlay') closeMaharModal(); else if (id ===
+                            'weddingDateModalOverlay') closeWeddingDateModal(); else if (id === 'confirmModalOverlay')
+                            closeConfirmModal(); } });
+                    closePopup(); }
+                if (e.key === 'Enter' && e.ctrlKey) { if (document.getElementById('itemModalOverlay').style.display ===
+                        'flex') { e.preventDefault();
+                        saveItem(); } if (document.getElementById('checklistModalOverlay').style.display === 'flex') { e
+                        .preventDefault();
+                        saveChecklist(); } if (document.getElementById('maharModalOverlay').style.display === 'flex') { e
+                        .preventDefault();
+                        saveMahar(); } }
+            });
+            window.addEventListener('scroll', () => { if (activePopup) closePopup(); }, { passive: true });
+
+            // ── EXPORT ──
+            window.exportToExcel = () => { const rows = [
+                    ['=== BUDGET ==='],
+                    ['Kategori', 'Item', 'Qty', 'Harga', 'Subtotal', 'Status', 'Catatan']
+                ];
+                budgetData.categories.forEach(c => c.items.forEach(it => rows.push([c.name, it.name, it.qty, it.price,
+                    getItemSubtotal(it), statusLabel(it.status), it.notes || ''
+                ])));
+                rows.push(['GRAND TOTAL', '', '', '', getGrandTotal()]);
+                rows.push([]);
+                rows.push(['=== CHECKLIST ===']);
+                rows.push(['Task', 'Kategori', 'Deadline', 'PIC', 'Status', 'Remarks']);
+                checklistData.forEach(t => rows.push([t.taskName, t.category, t.deadline, t.pic || '', t.status, t
+                    .remarks || ''
+                ]));
+                rows.push([]);
+                rows.push(['=== MAHAR ===']);
+                rows.push(['Item', 'Deskripsi', 'Qty', 'Harga', 'Selesai', 'Catatan']);
+                maharData.forEach(m => rows.push([m.itemName, m.description, m.qty, m.totalPrice, m.completed ? 'Ya' :
+                    'Tidak', m.remarks || ''
+                ]));
+                const ws = XLSX.utils.aoa_to_sheet(rows);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Wedding Planner');
+                XLSX.writeFile(wb, 'Wedding_Planner.xlsx');
+                showToast('Data berhasil diexport ke Excel.'); };
+            window.exportToPDF = () => { const btn = document.getElementById('btnExportPDF'); const ov = document
+                    .getElementById('loadingOverlay');
+                btn.disabled = true;
+                ov.style.display = 'flex'; const orig = budgetData.categories.map(c => ({ id: c.id, collapsed: c
+                        .collapsed }));
+                budgetData.categories.forEach(c => c.collapsed = false); const origTab = activeTab;
+                switchTab('dashboard');
+                renderAllTabs();
+                setTimeout(() => { html2pdf().set({ margin: [6, 6, 6, 6], filename: 'Wedding_Planner.pdf',
+                        image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2,
+                            backgroundColor: '#FFFFFF', logging: false }, jsPDF: { unit: 'mm', format: 'a4',
+                            orientation: 'portrait' } }).from(document.getElementById('mainContent')).save().then(() => {
+                        finishExport(orig, origTab, btn, ov, 'PDF berhasil di-export.'); }).catch(() => {
+                        finishExport(orig, origTab, btn, ov, 'Gagal export PDF.'); }); }, 250); };
+            const finishExport = (orig, tab, btn, ov, msg) => { budgetData.categories.forEach(c => { const o = orig.find(x =>
+                        x.id === c.id); if (o) c.collapsed = o.collapsed; });
+                persistAll();
+                switchTab(tab);
+                btn.disabled = false;
+                ov.style.display = 'none';
+                showToast(msg); };
+            const renderAllTabs = () => { renderDashboard();
+                renderBudget();
+                renderChecklist();
+                renderMahar(); };
+
+            switchTab('dashboard');
+            console.log('Wedding Planner ready — no browser native dialogs.');
+        })();
+    </script>
+</body>
+</html>
