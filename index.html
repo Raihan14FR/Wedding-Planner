@@ -1246,6 +1246,11 @@
 
         <!-- Kanan: Excel / PDF / Theme -->
         <div class="header-right">
+            <!-- Sync status indicator -->
+            <div id="syncStatus" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:9999px;background:var(--accent-soft);font-size:0.7rem;font-weight:600;color:var(--accent);letter-spacing:-0.01em;">
+                <span id="syncStatusDot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;"></span>
+                <span id="syncStatusText">Live</span>
+            </div>
             <button class="btn btn-sm" onclick="exportToExcel()" id="btnExportExcel" title="Export Excel">
                 <svg class="icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
                 <span>Excel</span>
@@ -1492,14 +1497,50 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+    // ══════════════════════════════════════════════════════════════
+    //  🔥 FIREBASE CONFIG — ganti dengan config project kamu
+    //  Cara dapat: Firebase Console → Project Settings → Your apps
+    // ══════════════════════════════════════════════════════════════
+    const firebaseConfig = {
+  apiKey: "AIzaSyD6RhzQWpSMu5gC1NwhElcPjMdyB-r0TfE",
+  authDomain: "wedding-planner-rl.firebaseapp.com",
+  projectId: "wedding-planner-rl",
+  storageBucket: "wedding-planner-rl.firebasestorage.app",
+  messagingSenderId: "1021544571495",
+  appId: "1:1021544571495:web:f1b41c0dcd08d3863b2ac2"
+};
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Firebase paths
+    const FB_BUDGET   = 'wedding/budget';
+    const FB_CHECKLIST = 'wedding/checklist';
+    const FB_MAHAR    = 'wedding/mahar';
+    const FB_DATE     = 'wedding/weddingDate';
+
+    // Helper: save to Firebase
+    const fbSet = (path, data) => set(ref(db, path), data).catch(e => console.error('Firebase save error:', e));
+
+    // Helper: load once from Firebase
+    const fbGet = (path) => get(ref(db, path)).then(snap => snap.exists() ? snap.val() : null).catch(() => null);
+
+    // Expose Firebase helpers to inner IIFE
+    window._fb = { db, ref, onValue, fbSet, fbGet, FB_BUDGET, FB_CHECKLIST, FB_MAHAR, FB_DATE };
+
+    </script>
+
     <script>
-    (function() {
-        const STORAGE_BUDGET = 'wedding_planner_data_v2';
-        const STORAGE_CHECKLIST = 'wedding_checklist_data';
-        const STORAGE_MAHAR = 'wedding_mahar_data';
-        const STORAGE_WEDDING_DATE = 'wedding_date';
+    (async function() {
         const THEME_KEY = 'wedding_planner_theme';
         let activeTab = 'dashboard';
+
+        // Wait for Firebase helpers
+        const { fbSet, fbGet, onValue, ref, db, FB_BUDGET, FB_CHECKLIST, FB_MAHAR, FB_DATE } = window._fb;
         const gid = () => 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
         const defBudget = () => ({ categories: [
@@ -1545,18 +1586,75 @@
             { id: gid(), itemName: 'Ongkos Pembuatan', description: 'Biaya pembuatan', qty: 1, completed: true, totalPrice: 5000000, remarks: 'Semua perhiasan' }
         ];
 
-        const load = (k, fb) => { try { const r = localStorage.getItem(k); if (r) return JSON.parse(r); } catch(e){} return fb(); };
-        const save = (k, d) => { try { localStorage.setItem(k, JSON.stringify(d)); return true; } catch(e) { showToast('Penyimpanan penuh.'); return false; } };
+        // ── FIREBASE SAVE / LOAD ──
+        const save = (k, d) => { fbSet(k, d); return true; };
 
-        let budgetData = load(STORAGE_BUDGET, defBudget);
-        let checklistData = load(STORAGE_CHECKLIST, defChecklist);
-        let maharData = load(STORAGE_MAHAR, defMahar);
-        let weddingDate = localStorage.getItem(STORAGE_WEDDING_DATE) || '';
+        // ── SHOW LOADING STATE WHILE FETCHING FROM FIREBASE ──
+        const loadingEl = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
+        loadingText.textContent = 'Memuat data dari server...';
+        loadingEl.style.display = 'flex';
+
+        // Load all data from Firebase
+        const [budgetRaw, checklistRaw, maharRaw, dateRaw] = await Promise.all([
+            fbGet(FB_BUDGET),
+            fbGet(FB_CHECKLIST),
+            fbGet(FB_MAHAR),
+            fbGet(FB_DATE)
+        ]);
+
+        let budgetData   = budgetRaw   || defBudget();
+        let checklistData = checklistRaw ? Object.values(checklistRaw) : defChecklist();
+        let maharData    = maharRaw    ? Object.values(maharRaw)    : defMahar();
+        let weddingDate  = dateRaw     || '';
+
+        // Save defaults to Firebase if first time (empty DB)
+        if (!budgetRaw)    save(FB_BUDGET, budgetData);
+        if (!checklistRaw) save(FB_CHECKLIST, Object.fromEntries(checklistData.map(x => [x.id, x])));
+        if (!maharRaw)     save(FB_MAHAR,    Object.fromEntries(maharData.map(x => [x.id, x])));
+
+        loadingEl.style.display = 'none';
+
+        // ── SYNC STATUS INDICATOR ──
+        const syncDot = document.getElementById('syncStatusDot');
+        const syncText = document.getElementById('syncStatusText');
+        let syncTimeout;
+        const flashSync = () => {
+            if (!syncDot) return;
+            syncDot.style.background = 'var(--sage)';
+            syncText.textContent = 'Synced';
+            clearTimeout(syncTimeout);
+            syncTimeout = setTimeout(() => {
+                syncDot.style.background = 'var(--accent)';
+                syncText.textContent = 'Live';
+            }, 1500);
+        };
+
+        // ── REAL-TIME LISTENERS (auto-sync when partner edits) ──
+        onValue(ref(db, FB_BUDGET), snap => {
+            if (snap.exists()) { budgetData = snap.val(); renderActive(); updateWeddingDateDisplay(); flashSync(); }
+        });
+        onValue(ref(db, FB_CHECKLIST), snap => {
+            if (snap.exists()) { checklistData = Object.values(snap.val()); renderActive(); flashSync(); }
+        });
+        onValue(ref(db, FB_MAHAR), snap => {
+            if (snap.exists()) { maharData = Object.values(snap.val()); renderActive(); flashSync(); }
+        });
+        onValue(ref(db, FB_DATE), snap => {
+            weddingDate = snap.exists() ? snap.val() : '';
+            updateWeddingDateDisplay();
+        });
         let editing = { item: null, cat: null, checklist: null, mahar: null };
         let activePopup = null, undoTO = null;
         let confirmCallback = null;
 
-        const persistAll = () => { save(STORAGE_BUDGET, budgetData); save(STORAGE_CHECKLIST, checklistData); save(STORAGE_MAHAR, maharData); updateWeddingDateDisplay(); renderActive(); };
+        const persistAll = () => {
+            save(FB_BUDGET, budgetData);
+            save(FB_CHECKLIST, Object.fromEntries(checklistData.map(x => [x.id, x])));
+            save(FB_MAHAR, Object.fromEntries(maharData.map(x => [x.id, x])));
+            updateWeddingDateDisplay();
+            renderActive();
+        };
 
         // ── THEME ──
         const getTheme = () => localStorage.getItem(THEME_KEY) || 'light';
@@ -1625,8 +1723,8 @@
         window.closeWeddingDateModal = () => { document.getElementById('weddingDateModalOverlay').style.display = 'none'; };
         window.saveWeddingDate = () => {
             const d = document.getElementById('weddingDateInput').value;
-            if (d && !isNaN(new Date(d).getTime())) { weddingDate = d; localStorage.setItem(STORAGE_WEDDING_DATE, d); }
-            else if (d === '') { weddingDate = ''; localStorage.removeItem(STORAGE_WEDDING_DATE); }
+            if (d && !isNaN(new Date(d).getTime())) { weddingDate = d; fbSet(FB_DATE, d); }
+            else if (d === '') { weddingDate = ''; fbSet(FB_DATE, ''); }
             closeWeddingDateModal(); updateWeddingDateDisplay();
             showToast(weddingDate ? 'Wedding date berhasil disimpan.' : 'Wedding date dihapus.');
         };
@@ -1758,7 +1856,7 @@
 
         window.toggleCat = id => {
             const c = budgetData.categories.find(x => x.id === id); if (!c) return;
-            c.collapsed = !c.collapsed; save(STORAGE_BUDGET, budgetData);
+            c.collapsed = !c.collapsed; save(FB_BUDGET, budgetData);
             const el = document.getElementById('cat_' + id); if (el) el.classList.toggle('expanded', !c.collapsed);
         };
 
@@ -1776,15 +1874,15 @@
             const obj = { id: editing.item || gid(), name: n, qty: parseInt(document.getElementById('itemQtyInput').value) || 1, price: parseInt(document.getElementById('itemPriceInput').value) || 0, status: document.getElementById('itemStatusInput').value, notes: document.getElementById('itemNotesInput').value.trim() };
             const c = budgetData.categories.find(x => x.id === editing.cat); if (!c) return;
             if (editing.item) { const idx = c.items.findIndex(x => x.id === editing.item); if (idx > -1) c.items[idx] = obj; } else c.items.push(obj);
-            closeItemModal(); save(STORAGE_BUDGET, budgetData); renderBudget(); showToast(editing.item ? 'Item berhasil diupdate.' : 'Item berhasil ditambahkan.');
+            closeItemModal(); save(FB_BUDGET, budgetData); renderBudget(); showToast(editing.item ? 'Item berhasil diupdate.' : 'Item berhasil ditambahkan.');
         };
-        window.deleteItem = (itemId, catId) => { const c = budgetData.categories.find(x => x.id === catId); if (!c) return; const idx = c.items.findIndex(x => x.id === itemId); if (idx === -1) return; const del = c.items[idx]; openConfirmModal('Hapus Item?', '"' + del.name + '" akan dihapus.', () => { c.items.splice(idx, 1); save(STORAGE_BUDGET, budgetData); renderBudget(); showToast('Item dihapus.', () => { c.items.splice(idx, 0, del); save(STORAGE_BUDGET, budgetData); renderBudget(); showToast('Item dikembalikan.'); }); }); };
+        window.deleteItem = (itemId, catId) => { const c = budgetData.categories.find(x => x.id === catId); if (!c) return; const idx = c.items.findIndex(x => x.id === itemId); if (idx === -1) return; const del = c.items[idx]; openConfirmModal('Hapus Item?', '"' + del.name + '" akan dihapus.', () => { c.items.splice(idx, 1); save(FB_BUDGET, budgetData); renderBudget(); showToast('Item dihapus.', () => { c.items.splice(idx, 0, del); save(FB_BUDGET, budgetData); renderBudget(); showToast('Item dikembalikan.'); }); }); };
 
         // Category Modal
         window.openCategoryModal = (id) => { editing.cat = id || null; document.getElementById('categoryModalTitle').textContent = id ? 'Edit Kategori' : 'Tambah Kategori'; document.getElementById('categoryNameInput').value = id ? (budgetData.categories.find(x => x.id === id)?.name || '') : ''; document.getElementById('categoryModalOverlay').style.display = 'flex'; setTimeout(() => document.getElementById('categoryNameInput').focus(), 80); };
         window.closeCategoryModal = () => { document.getElementById('categoryModalOverlay').style.display = 'none'; editing.cat = null; };
-        window.saveCategory = () => { const n = document.getElementById('categoryNameInput').value.trim(); if (!n) { showToast('Nama kategori wajib diisi.'); return; } if (editing.cat) { const c = budgetData.categories.find(x => x.id === editing.cat); if (c) c.name = n; } else budgetData.categories.push({ id: gid(), name: n, collapsed: false, items: [] }); closeCategoryModal(); save(STORAGE_BUDGET, budgetData); renderBudget(); showToast(editing.cat ? 'Kategori diupdate.' : 'Kategori ditambahkan.'); };
-        window.deleteCategory = (id) => { const idx = budgetData.categories.findIndex(x => x.id === id); if (idx === -1) return; const del = budgetData.categories[idx]; openConfirmModal('Hapus Kategori?', '"' + del.name + '" dan semua item di dalamnya akan dihapus.', () => { budgetData.categories.splice(idx, 1); save(STORAGE_BUDGET, budgetData); renderBudget(); showToast('Kategori dihapus.', () => { budgetData.categories.splice(idx, 0, del); save(STORAGE_BUDGET, budgetData); renderBudget(); showToast('Kategori dikembalikan.'); }); }); };
+        window.saveCategory = () => { const n = document.getElementById('categoryNameInput').value.trim(); if (!n) { showToast('Nama kategori wajib diisi.'); return; } if (editing.cat) { const c = budgetData.categories.find(x => x.id === editing.cat); if (c) c.name = n; } else budgetData.categories.push({ id: gid(), name: n, collapsed: false, items: [] }); closeCategoryModal(); save(FB_BUDGET, budgetData); renderBudget(); showToast(editing.cat ? 'Kategori diupdate.' : 'Kategori ditambahkan.'); };
+        window.deleteCategory = (id) => { const idx = budgetData.categories.findIndex(x => x.id === id); if (idx === -1) return; const del = budgetData.categories[idx]; openConfirmModal('Hapus Kategori?', '"' + del.name + '" dan semua item di dalamnya akan dihapus.', () => { budgetData.categories.splice(idx, 1); save(FB_BUDGET, budgetData); renderBudget(); showToast('Kategori dihapus.', () => { budgetData.categories.splice(idx, 0, del); save(FB_BUDGET, budgetData); renderBudget(); showToast('Kategori dikembalikan.'); }); }); };
 
         // Status Popup
         const closePopup = () => { if (activePopup) { activePopup.remove(); activePopup = null; } };
@@ -1793,7 +1891,7 @@
             const rect = e.target.getBoundingClientRect();
             const p = document.createElement('div'); p.className = 'status-popup';
             const statuses = [{ v: 'Waiting', c: 'waiting', col: '#AEAEB2' }, { v: 'OnNego', c: 'onnego', col: '#B8864E' }, { v: 'OnProgress', c: 'progress', col: '#4A8FD4' }, { v: 'Done', c: 'done', col: '#6B9B7A' }];
-            statuses.forEach(s => { const btn = document.createElement('button'); btn.className = 'status-option'; btn.innerHTML = `<span class="status-option-dot" style="background:${s.col};"></span>${statusLabel(s.v)}`; btn.onclick = () => { const c2 = budgetData.categories.find(x => x.id === catId); const it = c2?.items.find(x => x.id === itemId); if (it) { it.status = s.v; save(STORAGE_BUDGET, budgetData); renderBudget(); } closePopup(); }; p.appendChild(btn); });
+            statuses.forEach(s => { const btn = document.createElement('button'); btn.className = 'status-option'; btn.innerHTML = `<span class="status-option-dot" style="background:${s.col};"></span>${statusLabel(s.v)}`; btn.onclick = () => { const c2 = budgetData.categories.find(x => x.id === catId); const it = c2?.items.find(x => x.id === itemId); if (it) { it.status = s.v; save(FB_BUDGET, budgetData); renderBudget(); } closePopup(); }; p.appendChild(btn); });
             document.body.appendChild(p); activePopup = p;
             let top = rect.bottom + 6; let left = rect.left;
             if (top + 180 > window.innerHeight) top = rect.top - 180;
@@ -1856,80 +1954,4 @@
             </div>`).join('');
             if (d.length === 0) document.getElementById('checklistCards').innerHTML = '<div style="text-align:center;padding:20px;font-size:0.82rem;color:var(--text-tertiary);">Tidak ada task.</div>';
         };
-        window.openChecklistModal = (id) => { closePopup(); editing.checklist = id || null; document.getElementById('checklistModalTitle').textContent = id ? 'Edit Task' : 'Tambah Task'; if (id) { const t = checklistData.find(x => x.id === id); if (t) { document.getElementById('checklistTaskInput').value = t.taskName; document.getElementById('checklistCatInput').value = t.category; document.getElementById('checklistDeadlineInput').value = t.deadline || ''; document.getElementById('checklistPicInput').value = t.pic || ''; document.getElementById('checklistStatusInput').value = t.status; document.getElementById('checklistRemarksInput').value = t.remarks || ''; } } else { ['checklistTaskInput','checklistCatInput','checklistDeadlineInput','checklistPicInput','checklistRemarksInput'].forEach(id => document.getElementById(id).value = ''); document.getElementById('checklistStatusInput').value = 'Waiting'; } document.getElementById('checklistModalOverlay').style.display = 'flex'; setTimeout(() => document.getElementById('checklistTaskInput').focus(), 80); };
-        window.closeChecklistModal = () => { document.getElementById('checklistModalOverlay').style.display = 'none'; editing.checklist = null; };
-        window.saveChecklist = () => { const tn = document.getElementById('checklistTaskInput').value.trim(); if (!tn) { showToast('Task wajib diisi.'); return; } const obj = { id: editing.checklist || gid(), taskName: tn, category: document.getElementById('checklistCatInput').value.trim(), deadline: document.getElementById('checklistDeadlineInput').value, pic: document.getElementById('checklistPicInput').value.trim(), status: document.getElementById('checklistStatusInput').value, remarks: document.getElementById('checklistRemarksInput').value.trim() }; if (editing.checklist) { const idx = checklistData.findIndex(x => x.id === editing.checklist); if (idx > -1) checklistData[idx] = obj; } else checklistData.push(obj); closeChecklistModal(); save(STORAGE_CHECKLIST, checklistData); renderChecklist(); showToast(editing.checklist ? 'Task berhasil diupdate.' : 'Task berhasil ditambahkan.'); };
-        window.deleteChecklist = (id) => { const idx = checklistData.findIndex(x => x.id === id); if (idx === -1) return; const del = checklistData[idx]; openConfirmModal('Hapus Task?', '"' + del.taskName + '" akan dihapus.', () => { checklistData.splice(idx, 1); save(STORAGE_CHECKLIST, checklistData); renderChecklist(); showToast('Task dihapus.', () => { checklistData.splice(idx, 0, del); save(STORAGE_CHECKLIST, checklistData); renderChecklist(); showToast('Task dikembalikan.'); }); }); };
-
-        // ── MAHAR ──
-        const renderMahar = () => {
-            document.getElementById('maharSummary').innerHTML = `
-            <div class="stat-card"><div class="stat-label">Total Mahar</div><div class="stat-value accent">${fmtPriceShort(getMaharTotalPrice())}</div></div>
-            <div class="stat-card"><div class="stat-label">Total Item</div><div class="stat-value">${maharData.length}</div></div>
-            <div class="stat-card"><div class="stat-label">Selesai</div><div class="stat-value sage">${getMaharDone()}/${maharData.length}</div></div>
-            <div class="stat-card"><div class="stat-label">Progress</div><div class="stat-value">${maharData.length ? Math.round(getMaharDone()/maharData.length*100) : 0}%</div></div>`;
-            document.getElementById('maharList').innerHTML = maharData.map(m => `
-            <div class="mahar-card">
-                <div class="mahar-check-circle${m.completed?' done':''}" onclick="toggleMahar('${m.id}')">${m.completed?'<svg class="icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
-                <div class="mahar-info">
-                    <div class="mahar-name">${escHtml(m.itemName)}</div>
-                    <div class="mahar-desc">${escHtml(m.description)} · ×${m.qty}${m.remarks?` · ${escHtml(m.remarks)}`:''}</div>
-                </div>
-                <div class="mahar-price">${fmtPrice(m.totalPrice)}</div>
-                <div style="display:flex;gap:2px;">
-                    <button class="btn btn-icon btn-ghost" style="width:28px;height:28px;" onclick="openMaharModal('${m.id}')"><svg class="icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
-                    <button class="btn btn-icon btn-ghost" style="width:28px;height:28px;color:var(--red);" onclick="deleteMahar('${m.id}')"><svg class="icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                </div>
-            </div>`).join('') || '<div style="text-align:center;padding:20px;font-size:0.82rem;color:var(--text-tertiary);">Belum ada item mahar.</div>';
-        };
-        window.toggleMahar = (id) => { const m = maharData.find(x => x.id === id); if (m) { m.completed = !m.completed; save(STORAGE_MAHAR, maharData); renderMahar(); } };
-        window.openMaharModal = (id) => { closePopup(); editing.mahar = id || null; document.getElementById('maharModalTitle').textContent = id ? 'Edit Item Mahar' : 'Tambah Item Mahar'; if (id) { const m = maharData.find(x => x.id === id); if (m) { document.getElementById('maharNameInput').value = m.itemName; document.getElementById('maharDescInput').value = m.description; document.getElementById('maharQtyInput').value = m.qty; document.getElementById('maharPriceInput').value = m.totalPrice; document.getElementById('maharRemarksInput').value = m.remarks || ''; } } else { ['maharNameInput','maharDescInput','maharRemarksInput'].forEach(id => document.getElementById(id).value = ''); document.getElementById('maharQtyInput').value = '1'; document.getElementById('maharPriceInput').value = '0'; } document.getElementById('maharModalOverlay').style.display = 'flex'; setTimeout(() => document.getElementById('maharNameInput').focus(), 80); };
-        window.closeMaharModal = () => { document.getElementById('maharModalOverlay').style.display = 'none'; editing.mahar = null; };
-        window.saveMahar = () => { const n = document.getElementById('maharNameInput').value.trim(); if (!n) { showToast('Nama item wajib diisi.'); return; } const obj = { id: editing.mahar || gid(), itemName: n, description: document.getElementById('maharDescInput').value.trim(), qty: parseInt(document.getElementById('maharQtyInput').value) || 1, completed: editing.mahar ? (maharData.find(x => x.id === editing.mahar)?.completed || false) : false, totalPrice: parseInt(document.getElementById('maharPriceInput').value) || 0, remarks: document.getElementById('maharRemarksInput').value.trim() }; if (editing.mahar) { const idx = maharData.findIndex(x => x.id === editing.mahar); if (idx > -1) maharData[idx] = obj; } else maharData.push(obj); closeMaharModal(); save(STORAGE_MAHAR, maharData); renderMahar(); showToast(editing.mahar ? 'Item mahar berhasil diupdate.' : 'Item mahar berhasil ditambahkan.'); };
-        window.deleteMahar = (id) => { const idx = maharData.findIndex(x => x.id === id); if (idx === -1) return; const del = maharData[idx]; openConfirmModal('Hapus Item Mahar?', '"' + del.itemName + '" akan dihapus.', () => { maharData.splice(idx, 1); save(STORAGE_MAHAR, maharData); renderMahar(); showToast('Item mahar dihapus.', () => { maharData.splice(idx, 0, del); save(STORAGE_MAHAR, maharData); renderMahar(); showToast('Item mahar dikembalikan.'); }); }); };
-
-        // ── MODAL OVERLAY CLOSE ──
-        ['itemModalOverlay','categoryModalOverlay','checklistModalOverlay','maharModalOverlay'].forEach(id => {
-            document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) { if (id==='itemModalOverlay') closeItemModal(); else if (id==='categoryModalOverlay') closeCategoryModal(); else if (id==='checklistModalOverlay') closeChecklistModal(); else closeMaharModal(); } });
-        });
-
-        // ── KEYBOARD ──
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') { ['itemModalOverlay','categoryModalOverlay','checklistModalOverlay','maharModalOverlay','weddingDateModalOverlay','confirmModalOverlay'].forEach(id => { if (document.getElementById(id).style.display === 'flex') { if (id==='itemModalOverlay') closeItemModal(); else if (id==='categoryModalOverlay') closeCategoryModal(); else if (id==='checklistModalOverlay') closeChecklistModal(); else if (id==='maharModalOverlay') closeMaharModal(); else if (id==='weddingDateModalOverlay') closeWeddingDateModal(); else closeConfirmModal(); } }); closePopup(); }
-            if (e.key === 'Enter' && e.ctrlKey) { if (document.getElementById('itemModalOverlay').style.display==='flex') { e.preventDefault(); saveItem(); } if (document.getElementById('checklistModalOverlay').style.display==='flex') { e.preventDefault(); saveChecklist(); } if (document.getElementById('maharModalOverlay').style.display==='flex') { e.preventDefault(); saveMahar(); } }
-        });
-        window.addEventListener('scroll', () => { if (activePopup) closePopup(); }, { passive: true });
-
-        // ── EXPORT ──
-        window.exportToExcel = () => {
-            const rows = [['=== BUDGET ==='], ['Kategori','Item','Qty','Harga','Subtotal','Status','Catatan']];
-            budgetData.categories.forEach(c => c.items.forEach(it => rows.push([c.name, it.name, it.qty, it.price, getItemSubtotal(it), statusLabel(it.status), it.notes || ''])));
-            rows.push(['GRAND TOTAL','','','',getGrandTotal()]); rows.push([]); rows.push(['=== CHECKLIST ===']); rows.push(['Task','Kategori','Deadline','PIC','Status','Remarks']);
-            checklistData.forEach(t => rows.push([t.taskName, t.category, t.deadline, t.pic||'', t.status, t.remarks||'']));
-            rows.push([]); rows.push(['=== MAHAR ===']); rows.push(['Item','Deskripsi','Qty','Harga','Selesai','Catatan']);
-            maharData.forEach(m => rows.push([m.itemName, m.description, m.qty, m.totalPrice, m.completed?'Ya':'Tidak', m.remarks||'']));
-            const ws = XLSX.utils.aoa_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Wedding Planner'); XLSX.writeFile(wb, 'Wedding_Planner.xlsx'); showToast('Data berhasil diexport ke Excel.');
-        };
-
-        window.exportToPDF = () => {
-            const btn = document.getElementById('btnExportPDF'); const ov = document.getElementById('loadingOverlay');
-            btn.disabled = true; ov.style.display = 'flex';
-            const orig = budgetData.categories.map(c => ({ id: c.id, collapsed: c.collapsed }));
-            budgetData.categories.forEach(c => c.collapsed = false);
-            const origTab = activeTab; switchTab('dashboard'); renderAllTabs();
-            setTimeout(() => { html2pdf().set({ margin:[6,6,6,6], filename:'Wedding_Planner.pdf', image:{type:'jpeg',quality:0.95}, html2canvas:{scale:2,backgroundColor:'#FFFFFF',logging:false}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} }).from(document.getElementById('mainContent')).save().then(() => { finishExport(orig, origTab, btn, ov, 'PDF berhasil di-export.'); }).catch(() => { finishExport(orig, origTab, btn, ov, 'Gagal export PDF.'); }); }, 250);
-        };
-        const finishExport = (orig, tab, btn, ov, msg) => { budgetData.categories.forEach(c => { const o = orig.find(x => x.id === c.id); if (o) c.collapsed = o.collapsed; }); persistAll(); switchTab(tab); btn.disabled = false; ov.style.display = 'none'; showToast(msg); };
-        const renderAllTabs = () => { renderDashboard(); renderBudget(); renderChecklist(); renderMahar(); };
-
-        switchTab('dashboard');
-    })();
-    </script>
-
-    <!-- ═══════════ FOOTER ═══════════ -->
-    <footer style="text-align:center;padding:18px 20px 28px;font-size:0.68rem;color:var(--text-tertiary);letter-spacing:0.01em;border-top:1px solid var(--divider);margin-top:8px;">
-        &copy; 2026 <strong style="color:var(--accent);font-weight:600;">Velreka Indonesia</strong>. All rights reserved.
-    </footer>
-
-</body>
-</html>
+        window.openChecklistModal = (id) => { closePopup(); editing.checklist = id || null; document.get
