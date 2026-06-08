@@ -1507,14 +1507,15 @@
     //  🔥 FIREBASE CONFIG — ganti dengan config project kamu
     //  Cara dapat: Firebase Console → Project Settings → Your apps
     // ══════════════════════════════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyD6RhzQWpSMu5gC1NwhElcPjMdyB-r0TfE",
-  authDomain: "wedding-planner-rl.firebaseapp.com",
-  projectId: "wedding-planner-rl",
-  storageBucket: "wedding-planner-rl.firebasestorage.app",
-  messagingSenderId: "1021544571495",
-  appId: "1:1021544571495:web:f1b41c0dcd08d3863b2ac2"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyD6RhzQWpSMu5gC1NwhElcPjMdyB-r0TfE",
+        authDomain: "wedding-planner-rl.firebaseapp.com",
+        databaseURL: "https://wedding-planner-rl-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "wedding-planner-rl",
+        storageBucket: "wedding-planner-rl.firebasestorage.app",
+        messagingSenderId: "1021544571495",
+        appId: "1:1021544571495:web:f1b41c0dcd08d3863b2ac2"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
